@@ -483,6 +483,23 @@ a:hover {{
 
                 new SignatureCoordinator().SaveSignature(signatureDto);
 
+                // Verifikation: Lese den geschriebenen Signatur-Block zurück und aktualisiere die Vorschau.
+                try
+                {
+                    var svc = new SignatureService();
+                    var path = svc.GetPrimarySignaturePath();
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        var saved = svc.ReadSignatureBlock(path);
+                        if (!string.IsNullOrEmpty(saved))
+                        {
+                            var doc = $"<html><head><meta charset=\"utf-8\"><style>body{{font-family:Arial,Helvetica,sans-serif;}}</style></head><body>{saved}</body></html>";
+                            SignaturePreviewBrowser.NavigateToString(doc);
+                        }
+                    }
+                }
+                catch { /* non-fatal — nur Debug/Hilfestellung im UI */ }
+
                 MessageBox.Show("Konfiguration gespeichert und sofort angewendet.");
             }
             catch (Exception ex)
