@@ -12,12 +12,11 @@ namespace BannerBuddy.AddIn.Core
         public static string Build(SignatureInputDto d)
         {
             // Persönlicher Bereich
-            var html = $@"<p>
+            var html = $@"<p style=\"margin:0 0 8px 0;\">
 {d.Greeting}<br>
 {d.Hashtag}
 </p>
-
-<p>
+<p style=\"margin:0 0 8px 0;\">
 {d.Prefix} <strong>{d.Name}</strong><br>
 {d.Role}
 </p>";
@@ -26,18 +25,15 @@ namespace BannerBuddy.AddIn.Core
             if (d.ShowSkyline && !string.IsNullOrWhiteSpace(d.SkylineImageFile))
             {
                 html += $@"
-<p>
-<img src=""{d.SkylineImageFile}"" style=""max-width:420px;"" alt=""Skyline"" />
+<p style=\"margin:6px 0 8px 0;\">
+<img src=\"{d.SkylineImageFile}\" style=\"max-width:420px;\" alt=\"Skyline\" />
 </p>";
             }
 
             // Firmenblock
             html += $@"
-<p>
-<strong>{d.Company}</strong>
-</p>
-
-<p>
+<p style=\"margin:0 0 6px 0;\"><strong>{d.Company}</strong></p>
+<p style=\"margin:0 0 8px 0;\">
 {d.Branch}<br>
 {d.Street}<br>
 {d.ZipCity}
@@ -45,18 +41,18 @@ namespace BannerBuddy.AddIn.Core
 
             // Kontaktdaten
             html += $@"
-<p>
+<p style=\"margin:0 0 8px 0;\">
 Fon&nbsp;&nbsp;&nbsp;{d.Phone}<br>
 Mobil&nbsp;{d.Mobile}<br>
-Mail&nbsp;&nbsp;<a href=""mailto:{d.Email}"">{d.Email}</a><br>
-Net&nbsp;&nbsp;&nbsp;<a href=""{d.Website}"">{d.Website}</a>
+Mail&nbsp;&nbsp;<a href=\"mailto:{d.Email}\">{d.Email}</a><br>
+Net&nbsp;&nbsp;&nbsp;<a href=\"{d.Website}\">{d.Website}</a>
 </p>
 
-<hr style=""border:0; border-top:1px solid #ccc; margin:10px 0;""/>";
+<hr style=\"border:0; border-top:1px solid #ccc; margin:6px 0;\"/>";
 
             // Rechtliches (klein, mehrzeilig)
             html += $@"
-<p style=""font-size:10px; line-height:1.4;"">
+<p style=\"font-size:10px; line-height:1.4; margin:0 0 8px 0;\">
 Sitz der Gesellschaft: {d.Jurisdiction}<br>
 Geschäftsführer: {d.ManagingDirectors}<br>
 {d.RegisterInfo}<br>
