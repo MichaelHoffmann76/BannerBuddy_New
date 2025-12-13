@@ -1,0 +1,15 @@
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\bin\Debug\net48\BannerBuddy.AddIn.dll
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\bin\Debug\net48\BannerBuddy.AddIn.pdb
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.csproj.AssemblyReference.cache
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.AssemblyInfoInputs.cache
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.AssemblyInfo.cs
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.csproj.CoreCompileInputs.cache
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.dll
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.pdb
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\bin\Debug\net48\Microsoft.Office.Interop.Outlook.dll
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBu.C185929B.Up2Date
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\UI\BannerWindow.baml
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\UI\BannerWindow.g.cs
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn_MarkupCompile.cache
+C:\Users\micha\OneDrive\Dokumente\GitHub\BannerBuddy_New\BannerBuddy.AddIn\obj\Debug\net48\BannerBuddy.AddIn.g.resources

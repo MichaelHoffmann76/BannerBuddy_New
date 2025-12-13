@@ -1,0 +1,7 @@
+Lege hier dein Icon ab:
+
+- Dateiname: BannerBuddy.png
+- Empfehlung: 32x32 (optional zusätzlich 64x64)
+- Transparenter Hintergrund
+
+Das Icon wird automatisch als EmbeddedResource eingebunden (siehe .csproj) und im Outlook-Ribbon verwendet.
