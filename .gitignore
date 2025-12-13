@@ -37,4 +37,5 @@ publish/
 .idea/
 
 # VSCode test output
-test-results/
+test-results/BannerBuddy.AddIn/bin/
+BannerBuddy.AddIn/obj/
