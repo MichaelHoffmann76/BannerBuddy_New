@@ -53,7 +53,8 @@ if (Test-Path $regasmPath -and $isAdmin -and (Test-Path $DllPath)) {
     & "$regasmPath" "$DllPath" /unregister
     if ($LASTEXITCODE -eq 0) { Write-Info 'regasm /unregister erfolgreich.' } else { Write-Err "regasm exitcode: $LASTEXITCODE"; exit $LASTEXITCODE }
 } elseif (-not $isAdmin) {
-    Write-Host "Um die DLL komplett zu entfernen, führe diese Shell als Administrator aus und dann:`n`""$regasmPath"" `""$DllPath"" /unregister`" -ForegroundColor Yellow
+    Write-Host "Um die DLL komplett zu entfernen, führe diese Shell als Administrator aus und dann:" -ForegroundColor Yellow
+    Write-Host "`"$regasmPath`" `"$DllPath`" /unregister" -ForegroundColor Yellow
 }
 
 Write-Info "Fertig. Outlook neu starten und Add-Ins prüfen."
