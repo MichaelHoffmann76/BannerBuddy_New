@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore NuGet packages
+        run: |
+          nuget restore BannerBuddy.slnx
+
+      - name: Build solution (msbuild)
+        run: |
+          msbuild BannerBuddy.slnx /m /p:Configuration=Debug
