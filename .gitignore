@@ -1,0 +1,40 @@
+# Visual Studio / .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# Build outputs
+**/bin/
+**/obj/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Visual Studio Code
+.vscode/
+
+# OneDrive cache
+*.tmp
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Logs
+*.log
+
+# Publish
+publish/
+
+# Rider caches
+.idea/
+
+# VSCode test output
+test-results/
