@@ -142,26 +142,182 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- TAB 3: Signatur (Platzhalter für Step 10) -->
+            <!-- TAB 3: Signatur (Step 10.6 - Strukturierte Felder) -->
             <TabItem Header="Signatur">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="10">
 
-                        <TextBlock Text="Signatur bearbeiten"
+                        <TextBlock Text="Firmensignatur (strukturiert)"
                                    FontSize="14"
                                    FontWeight="Bold"
                                    Margin="0,0,0,10"/>
 
-                        <TextBlock Text="Dieser Bereich betrifft nur den markierten Signatur-Block."
-                                   FontSize="12"
-                                   Foreground="Gray"
-                                   TextWrapping="Wrap"
-                                   Margin="0,0,0,10"/>
+                        <!-- Persönlich -->
+                        <GroupBox Header="Persönlich" Margin="0,0,0,10">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="(Editor folgt in Step 10)"
-                                   FontSize="12"
-                                   Foreground="DarkGray"
-                                   FontStyle="Italic"/>
+                                <TextBlock Text="Grußformel:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="GreetingText" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Hashtag:" Grid.Row="1" VerticalAlignment="Center"/>
+                                <TextBox x:Name="HashtagText" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Präfix:" Grid.Row="2" VerticalAlignment="Center"/>
+                                <ComboBox x:Name="PrefixCombo" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5">
+                                    <ComboBoxItem Content="i. V." IsSelected="True"/>
+                                    <ComboBoxItem Content="i. A."/>
+                                    <ComboBoxItem Content="ppa"/>
+                                    <ComboBoxItem Content="(kein Präfix)"/>
+                                </ComboBox>
+
+                                <TextBlock Text="Name:" Grid.Row="3" VerticalAlignment="Center"/>
+                                <TextBox x:Name="NameText" Grid.Row="3" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Rolle:" Grid.Row="4" VerticalAlignment="Center"/>
+                                <TextBox x:Name="RoleText" Grid.Row="4" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Skyline -->
+                        <GroupBox Header="Skyline" Margin="0,0,0,10">
+                            <StackPanel Margin="10">
+                                <CheckBox x:Name="SkylineEnabled" Content="Skyline anzeigen"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Firma -->
+                        <GroupBox Header="Firma" Margin="0,0,0,10">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Firmenname:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="CompanyText" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Niederlassung:" Grid.Row="1" VerticalAlignment="Center"/>
+                                <TextBox x:Name="BranchText" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Straße:" Grid.Row="2" VerticalAlignment="Center"/>
+                                <TextBox x:Name="StreetText" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="PLZ / Ort:" Grid.Row="3" VerticalAlignment="Center"/>
+                                <TextBox x:Name="ZipCityText" Grid.Row="3" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Kontakt -->
+                        <GroupBox Header="Kontakt" Margin="0,0,0,10">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Telefon:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="PhoneText" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Mobil:" Grid.Row="1" VerticalAlignment="Center"/>
+                                <TextBox x:Name="MobileText" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="E-Mail:" Grid.Row="2" VerticalAlignment="Center"/>
+                                <TextBox x:Name="EmailText" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Website:" Grid.Row="3" VerticalAlignment="Center"/>
+                                <TextBox x:Name="WebsiteText" Grid.Row="3" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Rechtliches -->
+                        <GroupBox Header="Rechtliches" Margin="0,0,0,10">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Sitz Gesellschaft:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="JurisdictionText" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Geschäftsführer:" Grid.Row="1" VerticalAlignment="Center"/>
+                                <TextBox x:Name="DirectorsText" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Registergericht:" Grid.Row="2" VerticalAlignment="Center"/>
+                                <TextBox x:Name="RegisterText" Grid.Row="2" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Social Media -->
+                        <GroupBox Header="Social Media (optional)" Margin="0,0,0,10">
+                            <Grid Margin="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="LinkedIn:" VerticalAlignment="Center"/>
+                                <TextBox x:Name="LinkedInUrl" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Twitter:" Grid.Row="1" VerticalAlignment="Center"/>
+                                <TextBox x:Name="TwitterUrl" Grid.Row="1" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Facebook:" Grid.Row="2" VerticalAlignment="Center"/>
+                                <TextBox x:Name="FacebookUrl" Grid.Row="2" Grid.Column="1" Margin="0,0,0,5"/>
+
+                                <TextBlock Text="Xing:" Grid.Row="3" VerticalAlignment="Center"/>
+                                <TextBox x:Name="XingUrl" Grid.Row="3" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Optionen -->
+                        <GroupBox Header="Optionen" Margin="0,0,0,10">
+                            <StackPanel Margin="10">
+                                <CheckBox x:Name="EnvHintCheck" Content="Umwelt-Hinweis anzeigen"/>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Vorschau (Step 10.8) -->
+                        <GroupBox Header="Vorschau" Margin="0,0,0,10">
+                            <Grid>
+                                <WebBrowser x:Name="SignaturePreviewBrowser"
+                                            Height="400"/>
+                            </Grid>
+                        </GroupBox>
 
                     </StackPanel>
                 </ScrollViewer>

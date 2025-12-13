@@ -348,5 +348,69 @@ namespace BannerBuddy.AddIn.Core
             html = NormalizeMetaCharset(html, "utf-8");
             WriteHtml(signaturePath, html, new UTF8Encoding(false));
         }
+
+        // Step 10.4: Signatur-Block einmalig anlegen (falls nicht vorhanden)
+        public bool EnsureSignatureBlock(string signaturePath)
+        {
+            var html = ReadHtml(signaturePath, out var enc);
+
+            // Schon vorhanden? Dann nichts tun.
+            if (html.Contains(SignatureMarkers.SignatureStart))
+                return false;
+
+            // Minimaler, neutraler Initialinhalt
+            var insert =
+                "\n\n" +
+                SignatureMarkers.SignatureStart + "\n" +
+                "<p><!-- Signaturinhalt hier bearbeiten --></p>\n" +
+                SignatureMarkers.SignatureEnd + "\n";
+
+            WriteHtml(signaturePath, html + insert, enc);
+            return true;
+        }
+
+        // Step 10.5: Signatur-Block aktualisieren (nur zwischen Markern)
+        public void UpdateSignatureBlock(string signaturePath, string newContent)
+        {
+            var html = ReadHtml(signaturePath, out var enc);
+
+            var start = html.IndexOf(SignatureMarkers.SignatureStart);
+            var end = html.IndexOf(SignatureMarkers.SignatureEnd);
+
+            if (start < 0 || end < start)
+                throw new InvalidOperationException("Signaturbereich nicht gefunden.");
+
+            start += SignatureMarkers.SignatureStart.Length;
+
+            var updated =
+                html.Substring(0, start) +
+                "\n" + newContent + "\n" +
+                html.Substring(end);
+
+            WriteHtml(signaturePath, updated, enc);
+        }
+
+        // Step 10.3.2: Signatur-Block lesen (nur zwischen Markern)
+        public string ReadSignatureBlock(string signaturePath)
+        {
+            var html = ReadHtml(signaturePath, out _);
+
+            var start = html.IndexOf(SignatureMarkers.SignatureStart);
+            var end = html.IndexOf(SignatureMarkers.SignatureEnd);
+
+            if (start < 0 || end < 0 || end <= start)
+                return null;
+
+            start += SignatureMarkers.SignatureStart.Length;
+
+            return html.Substring(start, end - start).Trim();
+        }
+
+        // Step 10.3.3: Primäre Signatur ermitteln (bewusst simpel)
+        public string GetPrimarySignaturePath()
+        {
+            var signatures = GetHtmlSignatures();
+            return signatures.FirstOrDefault();
+        }
     }
 }

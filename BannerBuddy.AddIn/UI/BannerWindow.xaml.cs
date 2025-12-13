@@ -32,6 +32,149 @@ namespace BannerBuddy.AddIn.UI
 
             LoadBannerList();
             LoadUiFromConfig();
+            LoadSignatureFields(); // Step 10.6
+            UpdateSignaturePreview(); // Step 10.8: Initiale Vorschau
+        }
+
+        // Step 10.6: Signatur-Felder mit Standardwerten initialisieren
+        private void LoadSignatureFields()
+        {
+            // HUNDT CONSULT Signatur
+            GreetingText.Text = "Beste Grüße";
+            HashtagText.Text = "#GernPerDu";
+            NameText.Text = "Michael Hoffmann";
+            RoleText.Text = "Niederlassungsleiter | Projektleiter";
+            SkylineEnabled.IsChecked = true;
+            CompanyText.Text = "HUNDT CONSULT GmbH";
+            BranchText.Text = "Niederlassung Hamburg";
+            StreetText.Text = "Mönkedamm 9";
+            ZipCityText.Text = "20457 Hamburg";
+            PhoneText.Text = "+49 40 33 44 153 266";
+            MobileText.Text = "+49 175 340 28 57";
+            EmailText.Text = "m.hoffmann@hundt-consult.de";
+            WebsiteText.Text = "www.hundt-consult.de";
+            JurisdictionText.Text = "Hamburg";
+            DirectorsText.Text = "Alexander Wüllner, Falko Stolte";
+            RegisterText.Text = "Registergericht: Hamburg, HRB 104958";
+            LinkedInUrl.Text = "https://www.linkedin.com/company/hundt-consult";
+            TwitterUrl.Text = "https://twitter.com/hundtconsult";
+            FacebookUrl.Text = "";
+            XingUrl.Text = "";
+            EnvHintCheck.IsChecked = true;
+
+            // Step 10.8: Event-Handler für Live-Vorschau
+            GreetingText.TextChanged += SignatureField_Changed;
+            HashtagText.TextChanged += SignatureField_Changed;
+            PrefixCombo.SelectionChanged += SignatureField_Changed;
+            NameText.TextChanged += SignatureField_Changed;
+            RoleText.TextChanged += SignatureField_Changed;
+            SkylineEnabled.Checked += SignatureField_Changed;
+            SkylineEnabled.Unchecked += SignatureField_Changed;
+            CompanyText.TextChanged += SignatureField_Changed;
+            BranchText.TextChanged += SignatureField_Changed;
+            StreetText.TextChanged += SignatureField_Changed;
+            ZipCityText.TextChanged += SignatureField_Changed;
+            PhoneText.TextChanged += SignatureField_Changed;
+            MobileText.TextChanged += SignatureField_Changed;
+            EmailText.TextChanged += SignatureField_Changed;
+            WebsiteText.TextChanged += SignatureField_Changed;
+            JurisdictionText.TextChanged += SignatureField_Changed;
+            DirectorsText.TextChanged += SignatureField_Changed;
+            RegisterText.TextChanged += SignatureField_Changed;
+            LinkedInUrl.TextChanged += SignatureField_Changed;
+            TwitterUrl.TextChanged += SignatureField_Changed;
+            FacebookUrl.TextChanged += SignatureField_Changed;
+            XingUrl.TextChanged += SignatureField_Changed;
+            EnvHintCheck.Checked += SignatureField_Changed;
+            EnvHintCheck.Unchecked += SignatureField_Changed;
+        }
+
+        // Step 10.8.3: DTO aus UI sammeln (zentral, DRY)
+        private SignatureInputDto CollectSignatureDtoFromUI()
+        {
+            // Präfix aus ComboBox auslesen
+            var prefix = (PrefixCombo.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content?.ToString() ?? "i. V.";
+            if (prefix == "(kein Präfix)")
+                prefix = string.Empty;
+
+            return new SignatureInputDto
+            {
+                Greeting = GreetingText.Text,
+                Hashtag = HashtagText.Text,
+                Prefix = prefix,
+                Name = NameText.Text,
+                Role = RoleText.Text,
+                ShowSkyline = SkylineEnabled.IsChecked == true,
+                SkylineImageFile = "file:///" + Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "BannerBuddy",
+                    "skyline.png"
+                ).Replace("\\", "/"),
+                Company = CompanyText.Text,
+                Branch = BranchText.Text,
+                Street = StreetText.Text,
+                ZipCity = ZipCityText.Text,
+                Phone = PhoneText.Text,
+                Mobile = MobileText.Text,
+                Email = EmailText.Text,
+                Website = WebsiteText.Text,
+                Jurisdiction = JurisdictionText.Text,
+                ManagingDirectors = DirectorsText.Text,
+                RegisterInfo = RegisterText.Text,
+                LinkedInUrl = LinkedInUrl.Text,
+                TwitterUrl = TwitterUrl.Text,
+                FacebookUrl = FacebookUrl.Text,
+                XingUrl = XingUrl.Text,
+                ShowEnvironmentHint = EnvHintCheck.IsChecked == true
+            };
+        }
+
+        // Step 10.8.2: Vorschau aktualisieren
+        private void UpdateSignaturePreview()
+        {
+            try
+            {
+                var dto = CollectSignatureDtoFromUI();
+                var html = SignatureTemplate.Build(dto);
+
+                // HTML minimal einbetten
+                var document = $@"
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+body {{
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #000;
+    margin: 10px;
+}}
+a {{
+    color: #0066cc;
+    text-decoration: none;
+}}
+a:hover {{
+    text-decoration: underline;
+}}
+</style>
+</head>
+<body>
+{html}
+</body>
+</html>";
+
+                SignaturePreviewBrowser.NavigateToString(document);
+            }
+            catch
+            {
+                // Vorschau-Fehler nicht anzeigen (optionale Funktion)
+            }
+        }
+
+        // Step 10.8.4: Event-Handler für Live-Vorschau
+        private void SignatureField_Changed(object sender, EventArgs e)
+        {
+            UpdateSignaturePreview();
         }
 
         private void LoadBannerList()
@@ -306,96 +449,46 @@ namespace BannerBuddy.AddIn.UI
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var config = _configService.Load() ?? new BannerBuddyConfig();
-
-            // Banner optional
-            if (config.Banner == null)
-                config.Banner = new BannerConfig();
-
-            var bannerEnabled = BannerEnabled.IsChecked == true;
-            if (string.IsNullOrWhiteSpace(_currentBannerFile))
-                bannerEnabled = false;
-
-            config.Banner.Enabled = bannerEnabled;
-            config.Banner.File = bannerEnabled ? _currentBannerFile : null;
-
-            if (bannerEnabled)
+            try
             {
-                if (StartDate.SelectedDate == null || EndDate.SelectedDate == null)
+                // Step 10.2: Banner + Urlaub speichern
+                var bannerData = new BannerInputDto
                 {
-                    MessageBox.Show("Bitte Start- und Enddatum für das Banner wählen.");
+                    Enabled = BannerEnabled.IsChecked,
+                    File = _currentBannerFile,
+                    StartDate = StartDate.SelectedDate,
+                    EndDate = EndDate.SelectedDate
+                };
+
+                var vacationData = new VacationInputDto
+                {
+                    Enabled = VacationEnabled.IsChecked,
+                    Text = VacationText.Text,
+                    NoticeDaysText = VacationNoticeDays.Text,
+                    StartDate = VacationStartDate.SelectedDate,
+                    EndDate = VacationEndDate.SelectedDate
+                };
+
+                var configCoordinator = new ConfigurationCoordinator();
+                var result = configCoordinator.SaveConfiguration(bannerData, vacationData);
+
+                if (!result.Success)
+                {
+                    MessageBox.Show(result.ErrorMessage);
                     return;
                 }
 
-                var start = StartDate.SelectedDate.Value.Date;
-                var end = EndDate.SelectedDate.Value.Date;
-                if (end < start)
-                {
-                    MessageBox.Show("Banner: Enddatum muss nach dem Startdatum liegen.");
-                    return;
-                }
+                // Step 10.6: Signatur speichern (nutzt CollectSignatureDtoFromUI)
+                var signatureDto = CollectSignatureDtoFromUI();
 
-                config.Banner.Start = start.ToString("yyyy-MM-dd");
-                config.Banner.End = end.ToString("yyyy-MM-dd");
+                new SignatureCoordinator().SaveSignature(signatureDto);
+
+                MessageBox.Show("Konfiguration gespeichert und sofort angewendet.");
             }
-            else
+            catch (Exception ex)
             {
-                config.Banner.Start = null;
-                config.Banner.End = null;
+                MessageBox.Show("Fehler beim Speichern:\n" + ex.Message);
             }
-
-            // Vacation optional
-            if (config.Vacation == null)
-                config.Vacation = new VacationConfig();
-
-            var vacationEnabled = VacationEnabled.IsChecked == true;
-            config.Vacation.Enabled = vacationEnabled;
-            config.Vacation.Text = VacationText.Text;
-
-            var noticeDaysText = (VacationNoticeDays.Text ?? string.Empty).Trim();
-            if (!int.TryParse(noticeDaysText, out var noticeDays))
-                noticeDays = 14;
-
-            if (noticeDays < 1 || noticeDays > 365)
-            {
-                MessageBox.Show("Urlaubs-Hinweis: Bitte eine Zahl zwischen 1 und 365 für 'Tage vorher' eingeben.");
-                return;
-            }
-
-            config.Vacation.NoticeDays = noticeDays;
-
-            if (vacationEnabled)
-            {
-                if (VacationStartDate.SelectedDate == null || VacationEndDate.SelectedDate == null)
-                {
-                    MessageBox.Show("Bitte Start- und Enddatum für den Urlaubs-Hinweis wählen.");
-                    return;
-                }
-
-                var vStart = VacationStartDate.SelectedDate.Value.Date;
-                var vEnd = VacationEndDate.SelectedDate.Value.Date;
-                if (vEnd < vStart)
-                {
-                    MessageBox.Show("Urlaubs-Hinweis: Enddatum muss nach dem Startdatum liegen.");
-                    return;
-                }
-
-                config.Vacation.Start = vStart.ToString("yyyy-MM-dd");
-                config.Vacation.End = vEnd.ToString("yyyy-MM-dd");
-            }
-            else
-            {
-                config.Vacation.Start = null;
-                config.Vacation.End = null;
-            }
-
-            _configService.Save(config);
-
-            // STEP 9: Live-Refresh – Änderungen sofort anwenden
-            var refresher = new RefreshService();
-            refresher.Refresh();
-
-            MessageBox.Show("Konfiguration gespeichert und sofort angewendet.");
         }
 
         private void ShowPreview(string filePath)
