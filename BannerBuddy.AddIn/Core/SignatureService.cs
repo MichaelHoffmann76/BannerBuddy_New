@@ -412,5 +412,66 @@ namespace BannerBuddy.AddIn.Core
             var signatures = GetHtmlSignatures();
             return signatures.FirstOrDefault();
         }
+
+        // Update ALLE Blöcke (Signature + Banner + Vacation) in EINEM Durchgang
+        public void UpdateAllBlocks(string signaturePath, string signatureContent, TimedContent banner, TimedContent vacation)
+        {
+            // Datei lesen (NUR EINMAL)
+            var html = ReadHtml(signaturePath, out var enc);
+
+            // 1. Signatur-Block aktualisieren
+            var sigStart = html.IndexOf(SignatureMarkers.SignatureStart);
+            var sigEnd = html.IndexOf(SignatureMarkers.SignatureEnd);
+
+            if (sigStart >= 0 && sigEnd > sigStart)
+            {
+                sigStart += SignatureMarkers.SignatureStart.Length;
+                html = html.Substring(0, sigStart) + "\n" + signatureContent + "\n" + html.Substring(sigEnd);
+            }
+
+            // 2. Umlaut-Fixes (falls .txt existiert)
+            var txtPath = Path.ChangeExtension(signaturePath, ".txt");
+            if (File.Exists(txtPath))
+            {
+                var plain = ReadPlainText(txtPath);
+                html = ApplyUmlautFixesFromPlainText(html, plain);
+            }
+
+            html = HtmlHelper.FixCommonUmlautCorruption(html);
+
+            // 3. Banner/Vacation-Marker sicherstellen (berührt Signatur-Marker NICHT)
+            html = HtmlHelper.EnsureMarkerBlocks(html);
+
+            // 4. Banner-Block aktualisieren
+            if (banner != null)
+            {
+                html = HtmlHelper.ReplaceBetween(
+                    html,
+                    SignatureMarkers.BannerStart,
+                    SignatureMarkers.BannerEnd,
+                    banner.IsActive() ? banner.Html : string.Empty
+                );
+            }
+
+            // 5. Vacation-Block aktualisieren
+            if (vacation != null)
+            {
+                html = HtmlHelper.ReplaceBetween(
+                    html,
+                    SignatureMarkers.VacationStart,
+                    SignatureMarkers.VacationEnd,
+                    vacation.IsActive() ? vacation.Html : string.Empty
+                );
+            }
+
+            // 6. Alte Banner-Bilder außerhalb Marker entfernen
+            html = RemoveBannerBuddyBannerImagesOutsideMarkerBlock(html);
+
+            // 7. Charset normalisieren
+            html = NormalizeMetaCharset(html, "utf-8");
+
+            // Datei schreiben (NUR EINMAL)
+            WriteHtml(signaturePath, html, new UTF8Encoding(false));
+        }
     }
 }

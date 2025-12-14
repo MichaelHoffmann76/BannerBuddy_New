@@ -22,24 +22,23 @@ namespace BannerBuddy.AddIn.Core
             service.EnsureSignatureBlock(path);
 
             // HTML aus Template erzeugen
-            var html = SignatureTemplate.Build(dto);
+            var signatureHtml = SignatureTemplate.Build(dto);
 
-            // Nur Marker-Block überschreiben
-            service.UpdateSignatureBlock(path, html);
-
-            // Banner + Vacation direkt anwenden (OHNE die Datei erneut einzulesen über Refresh)
-            // Das verhindert, dass der gerade geschriebene Signature-Block verloren geht.
+            // Banner + Vacation laden
             var configService = new ConfigService();
             var config = configService.Load();
+            
+            TimedContent banner = null;
+            TimedContent vacation = null;
+            
             if (config != null)
             {
-                var banner = TimedContentFactory.CreateBanner(config.Banner);
-                var vacation = TimedContentFactory.CreateVacation(config.Vacation);
-                
-                // ApplyTimedContent liest die Datei neu ein (mit der gerade geschriebenen Signatur),
-                // aktualisiert Banner/Vacation und schreibt alles zurück.
-                service.ApplyTimedContent(path, banner, vacation);
+                banner = TimedContentFactory.CreateBanner(config.Banner);
+                vacation = TimedContentFactory.CreateVacation(config.Vacation);
             }
+            
+            // ALLES in EINEM Schritt schreiben: Signatur + Banner + Vacation
+            service.UpdateAllBlocks(path, signatureHtml, banner, vacation);
         }
     }
 }
