@@ -481,7 +481,16 @@ a:hover {{
                 // Step 10.6: Signatur speichern (nutzt CollectSignatureDtoFromUI)
                 var signatureDto = CollectSignatureDtoFromUI();
 
-                new SignatureCoordinator().SaveSignature(signatureDto);
+                try
+                {
+                    new SignatureCoordinator().SaveSignature(signatureDto);
+                }
+                catch (Exception sigEx)
+                {
+                    MessageBox.Show($"FEHLER beim Signatur-Speichern:\n{sigEx.Message}\n\nStackTrace:\n{sigEx.StackTrace}", 
+                        "Signatur-Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 // Verifikation: Lese den geschriebenen Signatur-Block zurück und aktualisiere die Vorschau.
                 try
@@ -495,10 +504,28 @@ a:hover {{
                         {
                             var doc = $"<html><head><meta charset=\"utf-8\"><style>body{{font-family:Arial,Helvetica,sans-serif;}}</style></head><body>{saved}</body></html>";
                             SignaturePreviewBrowser.NavigateToString(doc);
+                            
+                            // Debug: Zeige ersten Teil des gespeicherten Contents
+                            var preview = saved.Length > 100 ? saved.Substring(0, 100) + "..." : saved;
+                            System.Diagnostics.Debug.WriteLine($"Signatur gespeichert und zurückgelesen: {preview}");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Warnung: Signatur-Block konnte nicht zurückgelesen werden.", 
+                                "Warnung", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     }
+                    else
+                    {
+                        MessageBox.Show("Warnung: Keine primäre Signaturdatei gefunden.", 
+                            "Warnung", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
-                catch { /* non-fatal — nur Debug/Hilfestellung im UI */ }
+                catch (Exception readEx)
+                {
+                    // Non-fatal, aber loggen
+                    System.Diagnostics.Debug.WriteLine($"Fehler beim Zurücklesen der Signatur: {readEx.Message}");
+                }
 
                 MessageBox.Show("Konfiguration gespeichert und sofort angewendet.");
             }
