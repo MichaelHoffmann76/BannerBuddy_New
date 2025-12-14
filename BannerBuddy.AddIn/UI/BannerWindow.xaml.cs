@@ -39,28 +39,123 @@ namespace BannerBuddy.AddIn.UI
         // Step 10.6: Signatur-Felder mit Standardwerten initialisieren
         private void LoadSignatureFields()
         {
-            // HUNDT CONSULT Signatur
-            GreetingText.Text = "Beste Grüße";
-            HashtagText.Text = "#GernPerDu";
-            NameText.Text = "Michael Hoffmann";
-            RoleText.Text = "Niederlassungsleiter | Projektleiter";
-            SkylineEnabled.IsChecked = true;
-            CompanyText.Text = "HUNDT CONSULT GmbH";
-            BranchText.Text = "Niederlassung Hamburg";
-            StreetText.Text = "Mönkedamm 9";
-            ZipCityText.Text = "20457 Hamburg";
-            PhoneText.Text = "+49 40 33 44 153 266";
-            MobileText.Text = "+49 175 340 28 57";
-            EmailText.Text = "m.hoffmann@hundt-consult.de";
-            WebsiteText.Text = "www.hundt-consult.de";
-            JurisdictionText.Text = "Hamburg";
-            DirectorsText.Text = "Alexander Wüllner, Falko Stolte";
-            RegisterText.Text = "Registergericht: Hamburg, HRB 104958";
-            LinkedInUrl.Text = "https://www.linkedin.com/company/hundt-consult";
-            TwitterUrl.Text = "https://twitter.com/hundtconsult";
-            FacebookUrl.Text = "";
-            XingUrl.Text = "";
-            EnvHintCheck.IsChecked = true;
+            // Versuche, aus existierender Signatur zu laden
+            try
+            {
+                var service = new SignatureService();
+                var path = service.GetPrimarySignaturePath();
+                
+                if (!string.IsNullOrEmpty(path))
+                {
+                    // Signatur-Block lesen
+                    var html = service.ReadSignatureBlock(path);
+                    
+                    if (!string.IsNullOrEmpty(html))
+                    {
+                        // Einfaches HTML-Parsing (Regex für die wichtigsten Felder)
+                        var greetingMatch = System.Text.RegularExpressions.Regex.Match(html, @"<p[^>]*>(.*?)<br");
+                        if (greetingMatch.Success) GreetingText.Text = System.Web.HttpUtility.HtmlDecode(greetingMatch.Groups[1].Value.Trim());
+                        
+                        var hashtagMatch = System.Text.RegularExpressions.Regex.Match(html, @"<br>\s*(#\S+)");
+                        if (hashtagMatch.Success) HashtagText.Text = hashtagMatch.Groups[1].Value.Trim();
+                        
+                        var prefixMatch = System.Text.RegularExpressions.Regex.Match(html, @"</p>\s*<p[^>]*>\s*(i\.\s*[VA]\.|ppa)?");
+                        if (prefixMatch.Success && !string.IsNullOrWhiteSpace(prefixMatch.Groups[1].Value))
+                        {
+                            var prefix = prefixMatch.Groups[1].Value.Trim();
+                            foreach (System.Windows.Controls.ComboBoxItem item in PrefixCombo.Items)
+                            {
+                                if (item.Content.ToString() == prefix)
+                                {
+                                    PrefixCombo.SelectedItem = item;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        var nameMatch = System.Text.RegularExpressions.Regex.Match(html, @"<strong>(.*?)</strong>");
+                        if (nameMatch.Success) NameText.Text = System.Web.HttpUtility.HtmlDecode(nameMatch.Groups[1].Value.Trim());
+                        
+                        var roleMatch = System.Text.RegularExpressions.Regex.Match(html, @"</strong><br>\s*(.*?)\s*</p>", System.Text.RegularExpressions.RegexOptions.Singleline);
+                        if (roleMatch.Success) RoleText.Text = System.Web.HttpUtility.HtmlDecode(roleMatch.Groups[1].Value.Trim());
+                        
+                        SkylineEnabled.IsChecked = html.Contains("<img");
+                        
+                        var companyMatch = System.Text.RegularExpressions.Regex.Match(html, @"<p[^>]*><strong>(.*?GmbH.*?)</strong></p>");
+                        if (companyMatch.Success) CompanyText.Text = System.Web.HttpUtility.HtmlDecode(companyMatch.Groups[1].Value.Trim());
+                        
+                        var lines = System.Text.RegularExpressions.Regex.Matches(html, @"(?:Niederlassung |)(.*?)<br>|<br>\s*(.*?)\s*</p>");
+                        if (lines.Count > 0)
+                        {
+                            var addressLines = new System.Collections.Generic.List<string>();
+                            foreach (System.Text.RegularExpressions.Match m in lines)
+                            {
+                                var val = System.Web.HttpUtility.HtmlDecode((m.Groups[1].Value + m.Groups[2].Value).Trim());
+                                if (!string.IsNullOrWhiteSpace(val) && !val.Contains("Fon") && !val.Contains("HUNDT"))
+                                    addressLines.Add(val);
+                            }
+                            if (addressLines.Count >= 3)
+                            {
+                                BranchText.Text = addressLines[0];
+                                StreetText.Text = addressLines[1];
+                                ZipCityText.Text = addressLines[2];
+                            }
+                        }
+                        
+                        var phoneMatch = System.Text.RegularExpressions.Regex.Match(html, @"Fon&nbsp;&nbsp;&nbsp;(.*?)<br>");
+                        if (phoneMatch.Success) PhoneText.Text = System.Web.HttpUtility.HtmlDecode(phoneMatch.Groups[1].Value.Trim());
+                        
+                        var mobileMatch = System.Text.RegularExpressions.Regex.Match(html, @"Mobil&nbsp;(.*?)<br>");
+                        if (mobileMatch.Success) MobileText.Text = System.Web.HttpUtility.HtmlDecode(mobileMatch.Groups[1].Value.Trim());
+                        
+                        var emailMatch = System.Text.RegularExpressions.Regex.Match(html, @"href=""mailto:(.*?)""");
+                        if (emailMatch.Success) EmailText.Text = emailMatch.Groups[1].Value.Trim();
+                        
+                        var websiteMatch = System.Text.RegularExpressions.Regex.Match(html, @"href=""(www\.[^""]+)""");
+                        if (websiteMatch.Success) WebsiteText.Text = websiteMatch.Groups[1].Value.Trim();
+                        
+                        var jurisdictionMatch = System.Text.RegularExpressions.Regex.Match(html, @"Sitz der Gesellschaft:\s*(.*?)<br>");
+                        if (jurisdictionMatch.Success) JurisdictionText.Text = System.Web.HttpUtility.HtmlDecode(jurisdictionMatch.Groups[1].Value.Trim());
+                        
+                        var directorsMatch = System.Text.RegularExpressions.Regex.Match(html, @"Geschäftsführer:\s*(.*?)<br>");
+                        if (directorsMatch.Success) DirectorsText.Text = System.Web.HttpUtility.HtmlDecode(directorsMatch.Groups[1].Value.Trim());
+                        
+                        var registerMatch = System.Text.RegularExpressions.Regex.Match(html, @"(Registergericht:.*?)<br>");
+                        if (registerMatch.Success) RegisterText.Text = System.Web.HttpUtility.HtmlDecode(registerMatch.Groups[1].Value.Trim());
+                        
+                        var linkedinMatch = System.Text.RegularExpressions.Regex.Match(html, @"href=""(https://www\.linkedin\.com/[^""]+)""");
+                        if (linkedinMatch.Success) LinkedInUrl.Text = linkedinMatch.Groups[1].Value.Trim();
+                        
+                        var twitterMatch = System.Text.RegularExpressions.Regex.Match(html, @"href=""(https://twitter\.com/[^""]+)""");
+                        if (twitterMatch.Success) TwitterUrl.Text = twitterMatch.Groups[1].Value.Trim();
+                        
+                        EnvHintCheck.IsChecked = html.Contains("consider the environment");
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback auf Standard-Werte
+                GreetingText.Text = "Beste Grüße";
+                HashtagText.Text = "#GernPerDu";
+                NameText.Text = "Michael Hoffmann";
+                RoleText.Text = "Niederlassungsleiter | Projektleiter";
+                SkylineEnabled.IsChecked = true;
+                CompanyText.Text = "HUNDT CONSULT GmbH";
+                BranchText.Text = "Niederlassung Hamburg";
+                StreetText.Text = "Mönkedamm 9";
+                ZipCityText.Text = "20457 Hamburg";
+                PhoneText.Text = "+49 40 33 44 153 266";
+                MobileText.Text = "+49 175 340 28 57";
+                EmailText.Text = "m.hoffmann@hundt-consult.de";
+                WebsiteText.Text = "www.hundt-consult.de";
+                JurisdictionText.Text = "Hamburg";
+                DirectorsText.Text = "Alexander Wüllner, Falko Stolte";
+                RegisterText.Text = "Registergericht: Hamburg, HRB 104958";
+                LinkedInUrl.Text = "https://www.linkedin.com/company/hundt-consult";
+                TwitterUrl.Text = "https://twitter.com/hundtconsult";
+                EnvHintCheck.IsChecked = true;
+            }
 
             // Step 10.8: Event-Handler für Live-Vorschau
             GreetingText.TextChanged += SignatureField_Changed;
